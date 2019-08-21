@@ -24,6 +24,6 @@ public class Url {
     private String url;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "alert_id")
+    @JoinColumn(name = "url_id")
     private Set<Alert> alert;
 }

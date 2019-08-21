@@ -2,6 +2,7 @@ package com.example.back.backend.controller;
 
 import com.example.back.backend.model.Alert;
 import com.example.back.backend.services.AlertService;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
