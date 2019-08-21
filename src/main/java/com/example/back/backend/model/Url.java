@@ -23,7 +23,9 @@ public class Url {
 
     private String url;
 
+    private Long time;
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "url_id")
-    private Set<Alert> alert;
+    public Set<Alert> alert;
 }
