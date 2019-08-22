@@ -20,5 +20,9 @@ public class Alert {
     @GeneratedValue
     private Long id;
 
-    private Long alert;
+    public int alert;
+
+    private Long timeDifference;
+
+    //private Long currentTime;
 }

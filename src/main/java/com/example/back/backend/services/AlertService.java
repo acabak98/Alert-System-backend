@@ -15,4 +15,8 @@ public class AlertService {
     public Alert check(Alert alert) {
         return alertRepository.save(alert);
     }
+
+    public List<Alert> grafik(){
+        return alertRepository.findAll();
+    }
 }
