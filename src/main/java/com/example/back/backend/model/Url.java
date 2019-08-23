@@ -25,7 +25,11 @@ public class Url {
 
     private Long time;
 
+    private Integer period;
+
+    private Integer remaining;
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "url_id")
-    public Set<Alert> alert;
+    private Set<Alert> alert;
 }

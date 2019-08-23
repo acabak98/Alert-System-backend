@@ -28,17 +28,17 @@ public class UrlService {
         this.deneme();
     }
 
-    @Scheduled(fixedRate = 100)
+    @Scheduled(fixedRate = 1000)
     public void deneme() throws MalformedURLException, ProtocolException {
 
         List<Url> liste = urlRepository.findAll();
 
-        for (int i=0; i < liste.size();i++) {
-            Url item = liste.get(i);
-            if (System.currentTimeMillis() - item.getTime() < 10000 && System.currentTimeMillis() - item.getTime() >1000) {
+        for (Url item : liste) {
+            if (item.getRemaining()==0) {
                 Alert newAlert = new Alert();
                 newAlert.setTimeDifference(System.currentTimeMillis());
                 item.setTime(System.currentTimeMillis());
+                item.setRemaining(item.getPeriod());
                 urlRepository.save(item);
                 URL mahmut = new URL(item.getUrl());
                 HttpURLConnection con = null;
@@ -56,6 +56,10 @@ public class UrlService {
                 }
                 newAlert.setAlert(status);
                 this.alerting(item.getName(), newAlert);
+            }
+            else {
+                item.setRemaining(item.getRemaining()-1);
+                urlRepository.save(item);
             }
         }
     }

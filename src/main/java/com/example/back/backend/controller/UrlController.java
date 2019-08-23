@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,10 +29,12 @@ public class UrlController {
 
 
     @PostMapping("/loyloy")
-    public void laylay(@RequestParam String name, @RequestParam String url) throws IOException {
+    public void laylay(@RequestParam String name, @RequestParam String url, @RequestParam Integer controlPeriod) throws IOException {
         Url urlToPush = new Url();
         urlToPush.setName(name);
         urlToPush.setUrl(url);
+        urlToPush.setPeriod(controlPeriod);
+        urlToPush.setRemaining(controlPeriod);
         urlToPush.setTime(System.currentTimeMillis());
         urlService.laylay(urlToPush);
     }
