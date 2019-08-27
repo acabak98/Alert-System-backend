@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Alert {
+public class Response {
 
     @Id
     @GeneratedValue

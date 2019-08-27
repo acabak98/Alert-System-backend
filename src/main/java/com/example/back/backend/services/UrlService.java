@@ -1,6 +1,6 @@
 package com.example.back.backend.services;
 
-import com.example.back.backend.model.Alert;
+import com.example.back.backend.model.Response;
 import com.example.back.backend.model.Url;
 import com.example.back.backend.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,9 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -28,6 +26,37 @@ public class UrlService {
         this.deneme();
     }
 
+    @Async
+    public void connection(Url item) throws ProtocolException, MalformedURLException {
+        Response newResponse = new Response();
+        newResponse.setTimeDifference(System.currentTimeMillis());
+        item.setTime(System.currentTimeMillis());
+        item.setRemaining(item.getPeriod());
+        urlRepository.save(item);
+        URL mahmut = new URL(item.getUrl());
+        HttpURLConnection con = null;
+        try {
+            con = (HttpURLConnection) mahmut.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        con.setRequestMethod("GET");
+        int status;
+        try {
+            status = con.getResponseCode();
+        } catch (Exception e) {
+            status = 300;
+        }
+        if(status==200) {
+            newResponse.setAlert(10);
+            this.alerting(item.getName(), newResponse);
+        }
+        else {
+            newResponse.setAlert(0);
+            this.alerting(item.getName(), newResponse);
+        }
+    }
+
     @Scheduled(fixedRate = 1000)
     public void deneme() throws MalformedURLException, ProtocolException {
 
@@ -35,27 +64,7 @@ public class UrlService {
 
         for (Url item : liste) {
             if (item.getRemaining()==0) {
-                Alert newAlert = new Alert();
-                newAlert.setTimeDifference(System.currentTimeMillis());
-                item.setTime(System.currentTimeMillis());
-                item.setRemaining(item.getPeriod());
-                urlRepository.save(item);
-                URL mahmut = new URL(item.getUrl());
-                HttpURLConnection con = null;
-                try {
-                    con = (HttpURLConnection) mahmut.openConnection();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                con.setRequestMethod("GET");
-                int status;
-                try {
-                    status = con.getResponseCode();
-                } catch (Exception e) {
-                    status = 300;
-                }
-                newAlert.setAlert(status);
-                this.alerting(item.getName(), newAlert);
+                connection(item);
             }
             else {
                 item.setRemaining(item.getRemaining()-1);
@@ -64,10 +73,10 @@ public class UrlService {
         }
     }
 
-    public void alerting(final String givenName, Alert yenAlert){
+    public void alerting(final String givenName, Response yenResponse){
         Url urlToAdd = urlRepository.findByName(givenName);
         if (urlToAdd != null) {
-            urlToAdd.getAlert().add(yenAlert);
+            urlToAdd.getResponse().add(yenResponse);
             urlRepository.save(urlToAdd);
         }
     }

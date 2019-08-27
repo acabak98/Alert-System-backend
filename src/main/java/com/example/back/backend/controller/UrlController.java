@@ -1,20 +1,10 @@
 package com.example.back.backend.controller;
 
-import com.example.back.backend.model.Alert;
 import com.example.back.backend.model.Url;
 import com.example.back.backend.services.UrlService;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 
 @RestController
 @CrossOrigin("*")
@@ -34,7 +24,7 @@ public class UrlController {
         urlToPush.setName(name);
         urlToPush.setUrl(url);
         urlToPush.setPeriod(controlPeriod);
-        urlToPush.setRemaining(controlPeriod);
+        urlToPush.setRemaining(0);
         urlToPush.setTime(System.currentTimeMillis());
         urlService.laylay(urlToPush);
     }
