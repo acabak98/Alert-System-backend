@@ -21,12 +21,18 @@ public class ResponseController {
         return responseService.check(response);
     }
 
-    @GetMapping("/graph")
-    public List<Integer> grafik(){
+    @GetMapping("/aa")
+    public List<Integer> grafik(@RequestParam String name){
         List<Integer> dataResponse = new ArrayList<Integer>();
         List<Response> alldata = responseService.grafik();
+        List<Response> dataByName = new ArrayList<>();
         for (Response alldatum : alldata) {
-            dataResponse.add(alldatum.getAlert());
+            if (alldatum.getName() == name){
+                dataByName.add(alldatum);
+            }
+        }
+        for(Response data: dataByName) {
+            dataResponse.add(data.getSuccess());
         }
         return dataResponse;
     }

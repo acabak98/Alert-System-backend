@@ -22,7 +22,9 @@ public class Response {
     @GeneratedValue
     private Long id;
 
-    private Integer alert;
+    private String name;
+
+    private Integer success;
 
     private Long timeDifference;
 

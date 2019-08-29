@@ -13,7 +13,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Url {
+public class Alert {
 
     @Id
     @GeneratedValue
@@ -30,6 +30,6 @@ public class Url {
     private Integer remaining;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "url_id")
+    @JoinColumn(name = "alert_id")
     private Set<Response> response;
 }
