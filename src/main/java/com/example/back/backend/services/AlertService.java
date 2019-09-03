@@ -3,6 +3,7 @@ package com.example.back.backend.services;
 import com.example.back.backend.model.Alert;
 import com.example.back.backend.model.Response;
 import com.example.back.backend.repository.AlertRepository;
+import com.example.back.backend.repository.ResponseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,6 +22,8 @@ import java.util.List;
 public class AlertService {
 
     private final AlertRepository alertRepository;
+
+    private final ResponseRepository responseRepository;
 
     public void laylay(final Alert alert) throws MalformedURLException, ProtocolException {
         alertRepository.save(alert);
@@ -101,5 +104,9 @@ public class AlertService {
 
     public Alert takingGraph(String name){
         return  alertRepository.findByName(name);
+    }
+
+    public List<Response> takingGraph1(String name){
+        return responseRepository.findByNameOrderByIdAsc(name);
     }
 }

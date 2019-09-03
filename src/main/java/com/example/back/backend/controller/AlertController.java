@@ -3,8 +3,10 @@ package com.example.back.backend.controller;
 import com.example.back.backend.model.Alert;
 import com.example.back.backend.model.Response;
 import com.example.back.backend.services.AlertService;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.OrderBy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +52,13 @@ public class AlertController {
     @GetMapping("/graph1")
     public List<Long> graph1(@RequestParam String name){
         List<Long> dataResponse = new ArrayList<Long>();
-        Alert alertToGraph = alertService.takingGraph(name);
+        /*Alert alertToGraph = alertService.takingGraph(name);
         for (Response singleResponse : alertToGraph.getResponse()) {
             dataResponse.add(singleResponse.getTimeDifference());
+        }*/
+        List<Response> hop = alertService.takingGraph1(name);
+        for(Response single : hop) {
+            dataResponse.add(single.getTimeDifference());
         }
         return dataResponse;
     }
