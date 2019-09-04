@@ -1,14 +1,11 @@
 package com.example.back.backend.services;
-
 import com.example.back.backend.model.Alert;
 import com.example.back.backend.model.Response;
 import com.example.back.backend.repository.AlertRepository;
-import com.example.back.backend.repository.ResponseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -23,26 +20,45 @@ public class AlertService {
 
     private final AlertRepository alertRepository;
 
-    private final ResponseRepository responseRepository;
+    public void addAlert(String name, String url, Integer controlPeriod) throws MalformedURLException, ProtocolException {
+        Alert alertToPost = new Alert();
+        alertToPost.setName(name);
+        alertToPost.setUrl(url);
+        alertToPost.setPeriod(controlPeriod);
+        alertToPost.setRemaining(0);
+        alertToPost.setTime(System.currentTimeMillis());
+        alertRepository.save(alertToPost);
+        this.checkRemainingTime();
+    }
 
-    public void laylay(final Alert alert) throws MalformedURLException, ProtocolException {
-        alertRepository.save(alert);
-        this.deneme();
+    @Scheduled(fixedRate = 1000)
+    public void checkRemainingTime() throws MalformedURLException, ProtocolException {
+
+        List<Alert> alertList = alertRepository.findAll();
+
+        for (Alert singleAlert : alertList) {
+            if (singleAlert.getRemaining()==0) {
+                connection(singleAlert);
+            }
+            else {
+                singleAlert.setRemaining(singleAlert.getRemaining()-1);
+                alertRepository.save(singleAlert);
+            }
+        }
     }
 
     @Async
     public void connection(Alert item) throws ProtocolException, MalformedURLException {
         Response newResponse = new Response();
-        //newResponse.setTimeDifference(System.currentTimeMillis());
         newResponse.setName(item.getName());
         item.setTime(System.currentTimeMillis());
         item.setRemaining(item.getPeriod());
         alertRepository.save(item);
-        long milliStart=System.currentTimeMillis();
-        URL mahmut = new URL(item.getUrl());
+        long milliStart = System.currentTimeMillis();
+        URL urlToConnect = new URL(item.getUrl());
         HttpURLConnection con = null;
         try {
-            con = (HttpURLConnection) mahmut.openConnection();
+            con = (HttpURLConnection) urlToConnect.openConnection();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,55 +74,32 @@ public class AlertService {
         newResponse.setTimeDifference(milliTime);
         if(status==200) {
             newResponse.setSuccess(1);
-            this.alerting(item.getName(), newResponse);
+            this.addResponse(item.getName(), newResponse);
         }
         else {
             newResponse.setSuccess(0);
-            this.alerting(item.getName(), newResponse);
+            this.addResponse(item.getName(), newResponse);
         }
     }
 
-    @Scheduled(fixedRate = 1000)
-    public void deneme() throws MalformedURLException, ProtocolException {
 
-        List<Alert> liste = alertRepository.findAll();
-
-        for (Alert item : liste) {
-            if (item.getRemaining()==0) {
-                connection(item);
-            }
-            else {
-                item.setRemaining(item.getRemaining()-1);
-                alertRepository.save(item);
-            }
-        }
-    }
-
-    public void alerting(final String givenName, Response yenResponse){
-        Alert alertToAdd = alertRepository.findByName(givenName);
-        if (alertToAdd != null) {
-            alertToAdd.getResponse().add(yenResponse);
-            alertRepository.save(alertToAdd);
+    public void addResponse(final String name, Response response){
+        Alert alertToAddResponse = alertRepository.findByName(name);
+        if (alertToAddResponse != null) {
+            alertToAddResponse.getResponse().add(response);
+            alertRepository.save(alertToAddResponse);
         }
     }
 
     public List<Alert> selection(){
-        List<Alert> boslu = new ArrayList<>();
-        Alert bos = new Alert();
-        bos.setName("");
-        boslu.add(bos);
-        List<Alert> hepsi = alertRepository.findAll();
-        for(Alert bir: hepsi) {
-            boslu.add(bir);
+        List<Alert> alertListToSelect = new ArrayList<>();
+        Alert emptyAlert = new Alert();
+        emptyAlert.setName("");
+        alertListToSelect.add(emptyAlert);
+        List<Alert> alertList = alertRepository.findAll();
+        for(Alert singleAlert: alertList) {
+            alertListToSelect.add(singleAlert);
         }
-        return boslu;
-    }
-
-    public Alert takingGraph(String name){
-        return  alertRepository.findByName(name);
-    }
-
-    public List<Response> takingGraph1(String name){
-        return responseRepository.findByNameOrderByIdAsc(name);
+        return alertListToSelect;
     }
 }

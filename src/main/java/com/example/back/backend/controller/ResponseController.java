@@ -1,10 +1,6 @@
 package com.example.back.backend.controller;
-
-import com.example.back.backend.model.Response;
 import com.example.back.backend.services.ResponseService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -16,24 +12,13 @@ public class ResponseController {
 
     private final ResponseService responseService;
 
-    @PostMapping("/leylimley")
-    public Response check(@RequestBody Response response) {
-        return responseService.check(response);
+    @GetMapping("/timegraph")
+    public List<Long> graphOfTime(@RequestParam String name){
+        return responseService.graphOfTime(name);
     }
 
-    @GetMapping("/aa")
-    public List<Integer> grafik(@RequestParam String name){
-        List<Integer> dataResponse = new ArrayList<Integer>();
-        List<Response> alldata = responseService.grafik();
-        List<Response> dataByName = new ArrayList<>();
-        for (Response alldatum : alldata) {
-            if (alldatum.getName() == name){
-                dataByName.add(alldatum);
-            }
-        }
-        for(Response data: dataByName) {
-            dataResponse.add(data.getSuccess());
-        }
-        return dataResponse;
+    @GetMapping("/successgraph")
+    public List<Integer> graphOfSuccess(@RequestParam String name) {
+        return responseService.graphOfSuccess(name);
     }
 }
